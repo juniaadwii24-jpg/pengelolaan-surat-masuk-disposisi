@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS dispositions;
 DROP TABLE IF EXISTS incoming_letters;
 DROP TABLE IF EXISTS recipients;
+DROP TABLE IF EXISTS users;
 
 CREATE TABLE recipients (
     id          SERIAL PRIMARY KEY,
