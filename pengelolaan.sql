@@ -1,7 +1,7 @@
+DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS dispositions;
 DROP TABLE IF EXISTS incoming_letters;
 DROP TABLE IF EXISTS recipients;
-DROP TABLE IF EXISTS users;
 
 CREATE TABLE recipients (
     id          SERIAL PRIMARY KEY,
@@ -53,29 +53,58 @@ CREATE INDEX idx_dispositions_letter    ON dispositions(letter_id);
 CREATE INDEX idx_dispositions_recipient ON dispositions(recipient_id);
 CREATE INDEX idx_dispositions_status    ON dispositions(status);
 
---testing recipients--
+--testing recipients (struktur organisasi toko retail sesuai bagan)--
+-- Urutan insert = urutan id (SERIAL), mengikuti hierarki dari atas ke bawah, kiri ke kanan:
+-- Pemilik -> Direktur -> Manajer Umum -> (Staf Administrasi -> Supervisor -> [Marketing Retail, Marketing Project])
+--                                      -> (Sekretaris        -> Supervisor -> [Staf, Staf])
 INSERT INTO recipients (name, position, department, email) VALUES
-('Danendra Vero', 'Direktur Utama', 'Manajemen', 'danendra.vero@gmail.com'),
-('Ahmad Fauzi', 'Kepala Divisi', 'IT', 'ahmad.fauzi@gmail.com'),
-('Alexandra Drazeva Janela ', 'Supervisor', 'Keuangan', 'alexandra.drazeva@gmail.com'),
-('Bagas Pratama', 'Staff Senior', 'Legal', 'bagas.pratama@gmail.com'),
-('Maya Srikandi', 'Manager', 'Pemasaran', 'maya.srikandi@gmail.com');
+('Ahmad Zulkarnain', 'Pemilik', 'Manajemen', 'ahmad.zulkarnain@gmail.com'),          -- id 1
+('Danendra Vero', 'Direktur', 'Manajemen', 'danendra.vero@gmail.com'),               -- id 2
+('Rian Saputra', 'Manajer Umum', 'Manajemen', 'rian.saputra@gmail.com'),             -- id 3
+('Bagas Pratama', 'Staf Administrasi', 'Administrasi', 'bagas.pratama@gmail.com'),   -- id 4
+('Maya Srikandi', 'Sekretaris', 'Sekretariat', 'maya.srikandi@gmail.com'),           -- id 5
+('Alexandra Drazeva Janela', 'Supervisor Marketing', 'Marketing', 'alexandra.drazeva@gmail.com'), -- id 6
+('Siti Nurhaliza', 'Supervisor Operasional', 'Operasional', 'siti.nurhaliza@gmail.com'),          -- id 7
+('Fajar Ramadhan', 'Staf Marketing Retail', 'Marketing', 'fajar.ramadhan@gmail.com'),  -- id 8
+('Dewi Anggraini', 'Staf Marketing Project', 'Marketing', 'dewi.anggraini@gmail.com'), -- id 9
+('Ahmad Fauzi', 'Staf Operasional', 'Operasional', 'ahmad.fauzi@gmail.com'),           -- id 10
+('Putri Amelia', 'Staf Operasional', 'Operasional', 'putri.amelia@gmail.com');         -- id 11
 
---testing incoming_letters (harus sebelum dispositions)--
+--testing incoming_letters (harus sebelum dispositions) - konteks toko retail--
 INSERT INTO incoming_letters (letter_number, letter_date, received_date, sender, subject, description, status) VALUES
-('001/SM/VIII/2026', '2026-08-01', '2026-08-02', 'PT Solusi Teknologi', 'Penawaran Aplikasi ERP', 'Surat penawaran lisensi dan pengadaan sistem ERP perusahaan', 'Received'),
-('002/SM/VIII/2026', '2026-08-02', '2026-08-02', 'Kementerian Keuangan', 'Pemberitahuan Audit Pajak', 'Surat pemberitahuan pelaksanaan audit pajak tahunan', 'Processing'),
-('003/SM/VIII/2026', '2026-08-03', '2026-08-05', 'PT Mitra Nusantara', 'Draft Kontrak Kerjasama', 'Review draft perjanjian kerja sama investasi baru', 'Processing'),
-('004/SM/VIII/2026', '2026-08-04', '2026-08-04', 'Agensi Kreatif Indonesia', 'Proposal Kampanye Branding', 'Proposal strategi pemasaran digital dan iklan semester II', 'Received'),
-('005/SM/VIII/2026', '2026-08-05', '2026-08-06', 'Dinas Pelayanan Terpadu', 'Laporan Kinerja Tahunan', 'Undangan penyampaian laporan evaluasi dan kinerja direksi', 'Completed');
+('001/SM/VIII/2026', '2026-08-01', '2026-08-02', 'PT Sumber Pangan Nusantara', 'Penawaran Kerja Sama Pasokan Barang Retail', 'Penawaran kerja sama pengadaan stok barang kebutuhan sehari-hari untuk toko', 'Processing'),
+('002/SM/VIII/2026', '2026-08-02', '2026-08-03', 'Dinas Perdagangan Kota', 'Perpanjangan Izin Usaha Perdagangan (SIUP)', 'Pemberitahuan batas waktu perpanjangan izin usaha toko retail', 'Processing'),
+('003/SM/VIII/2026', '2026-08-04', '2026-08-04', 'Ratna Wijaya (Pelanggan)', 'Keluhan Produk Cacat dan Permintaan Retur', 'Surat keluhan pelanggan terkait produk elektronik yang diterima dalam kondisi rusak', 'Received'),
+('004/SM/VIII/2026', '2026-08-05', '2026-08-06', 'Agensi Kreasi Promosi', 'Proposal Kerja Sama Event Promo Akhir Tahun', 'Proposal kegiatan promosi dan diskon akhir tahun di area toko', 'Received'),
+('005/SM/VIII/2026', '2026-08-06', '2026-08-07', 'Dinas Tenaga Kerja', 'Undangan Pelatihan K3 dan Pelayanan Prima', 'Undangan pelatihan wajib bagi karyawan toko retail', 'Completed'),
+('006/SM/VIII/2026', '2026-08-08', '2026-08-08', 'Tim Audit Internal', 'Laporan Hasil Stock Opname Bulanan', 'Laporan hasil audit stok barang bulan Agustus 2026', 'Completed');
 
 --testing dispositions (terakhir, karena referensi ke 2 tabel di atas)--
+-- Setiap surat didisposisikan ke lebih dari 1 penerima supaya semua 11 posisi
+-- di struktur toko retail kebagian contoh data (dari Pemilik sampai staf paling bawah).
 INSERT INTO dispositions (letter_id, recipient_id, instruction, disposition_date, status, notes) VALUES
-(1, 2, 'Pelajari spesifikasi teknis ERP dan buat analisis kebutuhan IT', '2026-08-03', 'Pending', NULL),
-(2, 3, 'Siapkan dokumen laporan keuangan dan berkas perpajakan tahunan', '2026-08-03', 'In Progress', 'Pemeriksaan berkas internal sedang berjalan'),
-(3, 4, 'Lakukan review klausul pasal pada draft kontrak kerjasama', '2026-08-06', 'In Progress', 'Draft sedang dikaji oleh tim legal'),
-(4, 5, 'Evaluasi proposal kampanye branding dan hitung estimasi ROI', '2026-08-05', 'Pending', NULL),
-(5, 1, 'Hadir tepat waktu dan siapkan paparan laporan evaluasi kinerja', '2026-08-07', 'Completed', 'Danendra telah mengonfirmasi kehadiran');
+-- Surat 1: Penawaran supplier -> Manajer Umum (evaluasi) & Staf Marketing Retail (cek stok di lantai toko)
+(1, 3, 'Evaluasi penawaran supplier dan bandingkan dengan harga vendor saat ini', '2026-08-03', 'Pending', NULL),
+(1, 8, 'Cek ketersediaan rak dan estimasi kebutuhan stok di lantai toko', '2026-08-03', 'In Progress', 'Sedang pendataan rak kosong'),
+
+-- Surat 2: Perpanjangan SIUP -> Direktur (koordinasi) & Staf Administrasi (kumpulkan berkas)
+(2, 2, 'Siapkan dokumen perpanjangan SIUP dan koordinasi dengan notaris', '2026-08-04', 'In Progress', NULL),
+(2, 4, 'Kumpulkan berkas legalitas toko (NPWP, akta, dsb) untuk keperluan perpanjangan izin', '2026-08-04', 'Pending', NULL),
+
+-- Surat 3: Keluhan pelanggan -> Supervisor Operasional (tindak lanjut) & Staf Operasional (eksekusi retur)
+(3, 7, 'Tindak lanjuti keluhan pelanggan dan proses retur sesuai SOP', '2026-08-05', 'In Progress', 'Sudah dihubungi via telepon'),
+(3, 10, 'Hubungi pelanggan dan atur jadwal pengambilan barang retur', '2026-08-05', 'Pending', NULL),
+
+-- Surat 4: Proposal event promo -> Supervisor Marketing (kaji anggaran) & Staf Marketing Project (susun konsep)
+(4, 6, 'Kaji proposal event promo dan hitung estimasi anggaran', '2026-08-07', 'Pending', NULL),
+(4, 9, 'Susun draft konsep dekorasi dan materi promosi', '2026-08-07', 'Pending', NULL),
+
+-- Surat 5: Undangan pelatihan K3 -> Sekretaris (koordinasi peserta) & Staf Operasional (mengikuti pelatihan)
+(5, 5, 'Susun daftar karyawan yang akan mengikuti pelatihan dan konfirmasi kehadiran', '2026-08-07', 'Completed', 'Daftar peserta sudah dikirim ke penyelenggara'),
+(5, 11, 'Ikuti pelatihan K3 dan pelayanan prima sesuai jadwal', '2026-08-07', 'Completed', 'Sertifikat pelatihan sudah diterima'),
+
+-- Surat 6: Laporan stock opname -> Pemilik (tinjau & arahan tindak lanjut)
+(6, 1, 'Tinjau laporan stock opname dan berikan arahan tindak lanjut', '2026-08-09', 'Completed', 'Sudah dibahas di rapat mingguan');
 
 SELECT
     il.letter_number, il.subject, il.status AS letter_status,
