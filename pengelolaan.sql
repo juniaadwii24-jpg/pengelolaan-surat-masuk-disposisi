@@ -53,58 +53,30 @@ CREATE INDEX idx_dispositions_letter    ON dispositions(letter_id);
 CREATE INDEX idx_dispositions_recipient ON dispositions(recipient_id);
 CREATE INDEX idx_dispositions_status    ON dispositions(status);
 
---testing recipients (struktur organisasi toko retail sesuai bagan)--
--- Urutan insert = urutan id (SERIAL), mengikuti hierarki dari atas ke bawah, kiri ke kanan:
--- Pemilik -> Direktur -> Manajer Umum -> (Staf Administrasi -> Supervisor -> [Marketing Retail, Marketing Project])
---                                      -> (Sekretaris        -> Supervisor -> [Staf, Staf])
+--testing recipients (struktur organisasi SMK sesuai bagan)--
 INSERT INTO recipients (name, position, department, email) VALUES
-('Ahmad Zulkarnain', 'Pemilik', 'Manajemen', 'ahmad.zulkarnain@gmail.com'),          -- id 1
-('Danendra Vero', 'Direktur', 'Manajemen', 'danendra.vero@gmail.com'),               -- id 2
-('Rian Saputra', 'Manajer Umum', 'Manajemen', 'rian.saputra@gmail.com'),             -- id 3
-('Bagas Pratama', 'Staf Administrasi', 'Administrasi', 'bagas.pratama@gmail.com'),   -- id 4
-('Maya Srikandi', 'Sekretaris', 'Sekretariat', 'maya.srikandi@gmail.com'),           -- id 5
-('Alexandra Drazeva Janela', 'Supervisor Marketing', 'Marketing', 'alexandra.drazeva@gmail.com'), -- id 6
-('Siti Nurhaliza', 'Supervisor Operasional', 'Operasional', 'siti.nurhaliza@gmail.com'),          -- id 7
-('Fajar Ramadhan', 'Staf Marketing Retail', 'Marketing', 'fajar.ramadhan@gmail.com'),  -- id 8
-('Dewi Anggraini', 'Staf Marketing Project', 'Marketing', 'dewi.anggraini@gmail.com'), -- id 9
-('Ahmad Fauzi', 'Staf Operasional', 'Operasional', 'ahmad.fauzi@gmail.com'),           -- id 10
-('Putri Amelia', 'Staf Operasional', 'Operasional', 'putri.amelia@gmail.com');         -- id 11
+('Ahmad Zulkarnain', 'Kepala Sekolah', 'Manajemen Sekolah', 'ahmad.zulkarnain@smk.sch.id'),            -- id 1
+('Danendra Vero', 'Waka Hubungan Industri (Humas)', 'Hubinmas', 'danendra.vero@smk.sch.id'),             -- id 2
+('Rian Saputra', 'Waka Kurikulum', 'Kurikulum', 'rian.saputra@smk.sch.id'),                              -- id 3
+('Bagas Pratama', 'Kepala Tata Usaha', 'Tata Usaha (TU)', 'bagas.pratama@smk.sch.id'),                  -- id 4
+('Maya Srikandi', 'Sekretaris Tata Usaha', 'Tata Usaha (TU)', 'maya.srikandi@smk.sch.id');                -- id 5
 
---testing incoming_letters (harus sebelum dispositions) - konteks toko retail--
+-- Incoming Letters --
 INSERT INTO incoming_letters (letter_number, letter_date, received_date, sender, subject, description, status) VALUES
-('001/SM/VIII/2026', '2026-08-01', '2026-08-02', 'PT Sumber Pangan Nusantara', 'Penawaran Kerja Sama Pasokan Barang Retail', 'Penawaran kerja sama pengadaan stok barang kebutuhan sehari-hari untuk toko', 'Processing'),
-('002/SM/VIII/2026', '2026-08-02', '2026-08-03', 'Dinas Perdagangan Kota', 'Perpanjangan Izin Usaha Perdagangan (SIUP)', 'Pemberitahuan batas waktu perpanjangan izin usaha toko retail', 'Processing'),
-('003/SM/VIII/2026', '2026-08-04', '2026-08-04', 'Ratna Wijaya (Pelanggan)', 'Keluhan Produk Cacat dan Permintaan Retur', 'Surat keluhan pelanggan terkait produk elektronik yang diterima dalam kondisi rusak', 'Received'),
-('004/SM/VIII/2026', '2026-08-05', '2026-08-06', 'Agensi Kreasi Promosi', 'Proposal Kerja Sama Event Promo Akhir Tahun', 'Proposal kegiatan promosi dan diskon akhir tahun di area toko', 'Received'),
-('005/SM/VIII/2026', '2026-08-06', '2026-08-07', 'Dinas Tenaga Kerja', 'Undangan Pelatihan K3 dan Pelayanan Prima', 'Undangan pelatihan wajib bagi karyawan toko retail', 'Completed'),
-('006/SM/VIII/2026', '2026-08-08', '2026-08-08', 'Tim Audit Internal', 'Laporan Hasil Stock Opname Bulanan', 'Laporan hasil audit stok barang bulan Agustus 2026', 'Completed');
+('001/SMK/VIII/2026', '2026-08-01', '2026-08-02', 'Dinas Pendidikan Provinsi', 'Undangan Rapat Koordinasi Asesmen Nasional', 'Pemberitahuan rapat persiapan Asesmen Nasional (ANBK) tingkat SMK', 'Processing'),
+('002/SMK/VIII/2026', '2026-08-02', '2026-08-03', 'PT Auto Perkasa Teknik', 'Penawaran Kerja Sama Tempat Praktik Kerja Lapangan (PKL)', 'Penawaran kuota siswa PKL untuk Jurusan Teknik Kendaraan Ringan (TKR)', 'Processing'),
+('003/SMK/VIII/2026', '2026-08-04', '2026-08-04', 'PT Solusi Informatika Utama', 'Permohonan Rekrutmen Lulusan (Loker SMK)', 'Permintaan daftar calon lulusan jurusan Rekayasa Perangkat Lunak untuk seleksi kerja', 'Received'),
+('004/SMK/VIII/2026', '2026-08-05', '2026-08-06', 'Universitas Negeri', 'Undangan Lomba Kompetensi Siswa (LKS) Tingkat Kota', 'Undangan pengiriman kontingen siswa untuk cabang lomba teknologi informasi dan otomotif', 'Received'),
+('005/SMK/VIII/2026', '2026-08-06', '2026-08-07', 'Puskesmas Kecamatan', 'Pemberitahuan Program Pelaksanaan Imunisasi & Cek Kesehatan Siswa', 'Jadwal pemeriksaan kesehatan berkala bagi siswa kelas X tahun ajaran baru', 'Completed');
 
---testing dispositions (terakhir, karena referensi ke 2 tabel di atas)--
--- Setiap surat didisposisikan ke lebih dari 1 penerima supaya semua 11 posisi
--- di struktur toko retail kebagian contoh data (dari Pemilik sampai staf paling bawah).
+-- Dispositions --
 INSERT INTO dispositions (letter_id, recipient_id, instruction, disposition_date, status, notes) VALUES
--- Surat 1: Penawaran supplier -> Manajer Umum (evaluasi) & Staf Marketing Retail (cek stok di lantai toko)
-(1, 3, 'Evaluasi penawaran supplier dan bandingkan dengan harga vendor saat ini', '2026-08-03', 'Pending', NULL),
-(1, 8, 'Cek ketersediaan rak dan estimasi kebutuhan stok di lantai toko', '2026-08-03', 'In Progress', 'Sedang pendataan rak kosong'),
-
--- Surat 2: Perpanjangan SIUP -> Direktur (koordinasi) & Staf Administrasi (kumpulkan berkas)
-(2, 2, 'Siapkan dokumen perpanjangan SIUP dan koordinasi dengan notaris', '2026-08-04', 'In Progress', NULL),
-(2, 4, 'Kumpulkan berkas legalitas toko (NPWP, akta, dsb) untuk keperluan perpanjangan izin', '2026-08-04', 'Pending', NULL),
-
--- Surat 3: Keluhan pelanggan -> Supervisor Operasional (tindak lanjut) & Staf Operasional (eksekusi retur)
-(3, 7, 'Tindak lanjuti keluhan pelanggan dan proses retur sesuai SOP', '2026-08-05', 'In Progress', 'Sudah dihubungi via telepon'),
-(3, 10, 'Hubungi pelanggan dan atur jadwal pengambilan barang retur', '2026-08-05', 'Pending', NULL),
-
--- Surat 4: Proposal event promo -> Supervisor Marketing (kaji anggaran) & Staf Marketing Project (susun konsep)
-(4, 6, 'Kaji proposal event promo dan hitung estimasi anggaran', '2026-08-07', 'Pending', NULL),
-(4, 9, 'Susun draft konsep dekorasi dan materi promosi', '2026-08-07', 'Pending', NULL),
-
--- Surat 5: Undangan pelatihan K3 -> Sekretaris (koordinasi peserta) & Staf Operasional (mengikuti pelatihan)
-(5, 5, 'Susun daftar karyawan yang akan mengikuti pelatihan dan konfirmasi kehadiran', '2026-08-07', 'Completed', 'Daftar peserta sudah dikirim ke penyelenggara'),
-(5, 11, 'Ikuti pelatihan K3 dan pelayanan prima sesuai jadwal', '2026-08-07', 'Completed', 'Sertifikat pelatihan sudah diterima'),
-
--- Surat 6: Laporan stock opname -> Pemilik (tinjau & arahan tindak lanjut)
-(6, 1, 'Tinjau laporan stock opname dan berikan arahan tindak lanjut', '2026-08-09', 'Completed', 'Sudah dibahas di rapat mingguan');
+-- Surat 1: Dinas Pendidikan -> Waka Kurikulum
+(1, 3, 'Koordinasikan kesiapan laboratorium komputer dan susun jadwal proctor ANBK', '2026-08-03', 'In Progress', 'Sedang pendataan PC laboratorium'),
+(2, 2, 'Kaji draft MOU kerja sama PKL dan petakan siswa yang akan ditempatkan', '2026-08-04', 'In Progress', 'Draft MOU dalam peninjauan'),
+(2, 4, 'Siapkan surat tugas dan berkas administrasi pengantar PKL siswa', '2026-08-04', 'Pending', NULL),
+(5, 5, 'Edarkan surat pemberitahuan ke wali kelas X dan konfirmasi jadwal pelaksanaan ke Puskesmas', '2026-08-07', 'Completed', 'Surat sudah diteruskan ke para wali kelas'),
+(1, 1, 'Tinjau persiapan rapat koordinasi dan hadir pada rapat pleno Dinas Pendidikan', '2026-08-08', 'In Progress', 'Agenda sudah dijadwalkan');
 
 SELECT
     il.letter_number, il.subject, il.status AS letter_status,
