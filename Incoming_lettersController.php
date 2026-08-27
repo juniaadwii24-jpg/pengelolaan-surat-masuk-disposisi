@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class Incoming_lettersController extends CI_Controller
+class Incoming_lettersController extends MY_Controller
 {
 
     private $allowedFilterColumns = ['letter_number', 'sender', 'subject', 'status'];
@@ -247,7 +247,7 @@ public function update()
         // suatu saat constraint CASCADE dilepas / driver DB berbeda.
         $relatedDispositions = $this->model->getByLetterId($id);
         foreach ($relatedDispositions as $disposition) {
-            $this->model->deleteData($disposition->id);
+            $this->model->deleteData(['id' => $disposition->id]);
         }
 
         $ok = $this->Incoming_letter_model->delete($id);

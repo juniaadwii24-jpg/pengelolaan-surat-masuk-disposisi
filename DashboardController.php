@@ -1,6 +1,6 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-class DashboardController extends CI_Controller
+class DashboardController extends MY_Controller
 {
     public function __construct()
     {
@@ -25,6 +25,9 @@ class DashboardController extends CI_Controller
     public function index()
     {
         $data['title'] = 'Dashboard';
+    // --- Info user yang sedang login, untuk ucapan "Selamat datang" ---
+    $data['fullName'] = $this->session->userdata('full_name');
+    $data['role']     = $this->session->userdata('role');
 
         // --- Angka ringkasan ---
         $data['totalSurat']     = $this->db->count_all('incoming_letters');

@@ -1,7 +1,7 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
-class RecipientsController extends CI_Controller
+class RecipientsController extends MY_Controller
 {
     public function __construct()
     {
@@ -13,10 +13,11 @@ class RecipientsController extends CI_Controller
 
    
     public function index()
-    {
-        $data['title'] = 'Master Penerima Disposisi';
-        $this->template->load('main_template', 'pengelolaan/@recipients', $data);
-    }
+{
+    $this->checkPermission('index');
+    $data['title'] = 'Master Penerima Disposisi';
+    $this->template->load('main_template', 'pengelolaan/@recipients', $data);
+}
 
     /**
      * Endpoint untuk mengisi tabel di tab "Master Penerima".

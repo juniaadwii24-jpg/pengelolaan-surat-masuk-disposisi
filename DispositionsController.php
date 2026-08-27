@@ -6,7 +6,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * Menjembatani antara view (Knockout + DataTables) dan model (Disposition_model).
  * Semua endpoint AJAX yang dipanggil dari view (dispositions_view.php) ada di sini.
  */
-class DispositionsController extends CI_Controller
+class DispositionsController extends MY_Controller
 {
     public function __construct()
     {
@@ -65,31 +65,25 @@ class DispositionsController extends CI_Controller
      * Endpoint untuk menyimpan disposisi BARU (dipanggil dari tombol "Simpan"
      * saat form dalam mode tambah data, bukan mode Update).
      */
-    function save()
-    {
-        $data = json_decode(file_get_contents('php://input'), true);
+   public function save()
+{
+    $data = json_decode(file_get_contents('php://input'), true);
 
-        // Validasi ulang di server (validasi di frontend hanya untuk UX,
-        // validasi sesungguhnya yang menentukan aman/tidaknya data ada di sini).
-        $error = $this->_validate($data);
-        if ($error) {
-            echo json_encode(['result' => false, 'message' => $error]);
-            return;
-        }
-
-        // Simpan data disposisi baru, dapatkan id hasil insert
-        $insertId = $this->model->insertData($data);
-
-        // Business rule (poin 7): recalculate status surat setelah ada
-        // disposisi baru. Dipakai fungsi yang sama dengan update()/delete()
-        // supaya perilakunya konsisten di semua titik perubahan data disposisi.
-        if ($insertId) {
-            $this->_recalculateLetterStatus($data['letter_id']);
-        }
-
-        $res = ['result' => (bool) $insertId];
-        echo json_encode($res);
+    $error = $this->_validate($data);
+    if ($error) {
+        echo json_encode(['result' => false, 'message' => $error]);
+        return;
     }
+
+    $insertId = $this->model->insertData($data);
+
+    if ($insertId) {
+        $this->_recalculateLetterStatus($data['letter_id']);
+    }
+
+    $res = ['result' => (bool) $insertId, 'id' => $insertId];
+    echo json_encode($res);
+}
 
     /**
      * Endpoint untuk mengupdate disposisi yang sudah ada (termasuk ubah status
@@ -161,25 +155,23 @@ class DispositionsController extends CI_Controller
      * yang dihapus ternyata satu-satunya, atau sebaliknya, surat jadi Completed
      * kalau yang dihapus adalah satu-satunya disposisi aktif yang tersisa.
      */
-    function delete()
-    {
-        $data = json_decode(file_get_contents('php://input'), true);
+   function delete()
+{
+    $data = json_decode(file_get_contents('php://input'), true);
 
-        // Ambil letter_id SEBELUM data dihapus, karena setelah dihapus datanya
-        // sudah tidak bisa diambil lagi lewat getDataId().
-        $current = $this->model->getDataId($data['id']);
+    $current = $this->model->getDataId($data['id']);
 
-        $success = $this->model->deleteData($data['id']);
+    $success = $this->model->deleteData(['id' => $data['id']]);   // ✅ bungkus jadi array
 
-        if ($success && !empty($current)) {
-            $this->_recalculateLetterStatus($current[0]->letter_id);
-        }
-
-        echo json_encode([
-            'result'  => (bool) $success,
-            'message' => $success ? 'Data berhasil dihapus.' : 'Gagal menghapus data.',
-        ]);
+    if ($success && !empty($current)) {
+        $this->_recalculateLetterStatus($current[0]->letter_id);
     }
+
+    echo json_encode([
+        'result'  => (bool) $success,
+        'message' => $success ? 'Data berhasil dihapus.' : 'Gagal menghapus data.',
+    ]);
+}
 
     /**
      * Endpoint untuk mengisi dropdown "Surat Masuk" pada form (dipanggil sekali
