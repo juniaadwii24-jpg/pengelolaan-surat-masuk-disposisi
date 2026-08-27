@@ -1,7 +1,8 @@
-DROP TABLE IF EXISTS users;
 DROP TABLE IF EXISTS dispositions;
 DROP TABLE IF EXISTS incoming_letters;
 DROP TABLE IF EXISTS recipients;
+DROP TABLE IF EXISTS users;
+
 
 CREATE TABLE recipients (
     id          SERIAL PRIMARY KEY,
@@ -53,6 +54,28 @@ CREATE INDEX idx_dispositions_letter    ON dispositions(letter_id);
 CREATE INDEX idx_dispositions_recipient ON dispositions(recipient_id);
 CREATE INDEX idx_dispositions_status    ON dispositions(status);
 
+CREATE TABLE users (
+    id          SERIAL PRIMARY KEY,
+    username    VARCHAR(50)  NOT NULL UNIQUE,
+    password    VARCHAR(255) NOT NULL,
+    full_name   VARCHAR(150) NOT NULL,
+    role        VARCHAR(50)  NOT NULL DEFAULT 'staff',
+    is_active   BOOLEAN      NOT NULL DEFAULT TRUE,
+    created_at  TIMESTAMP    NOT NULL DEFAULT NOW()
+);
+ 
+CREATE INDEX idx_users_username ON users(username);
+ 
+--  tabel pendukung untuk login (password: <namauser>123, misal admin123, kepsek123, dst)
+INSERT INTO users (username, password, full_name, role) VALUES
+('admin',         '$2y$10$GN2Te7RX50orDokj5fG6EOlx.sjyx4fJecoXdk8JPZQUcGIsuhpMK', 'Dita Vandisa Jelita', 'admin'),
+('kepsek',        '$2y$10$wZdnmuf2MMUqihWj/3GkLeL0xextBCdU8/s0UmQlcMku9mq0v8ED6', 'Ahmad Zulkarnain',    'kepala sekolah'),
+('wakahumas',     '$2y$10$6Fqxp6KkFJwoi61/op67XOJo9ZXM4RjswBq7qlzMvvgkW/MSsTVO6', 'Danendra Vero',       'waka hubinmas'),
+('wakakurikulum', '$2y$10$8dmlPyXUtVoaoaiZ7iDQRuC0tVLFcDT7K0Jye2jNB3D1zKkB3rHpm', 'Rian Saputra',        'waka kurikulum'),
+('keptu',         '$2y$10$udCzePJ2S9QOddu2q78iMOpsafM5Pu6.aI8UbhlsmiH3yod/wzdRi', 'Bagas Pratama',       'Tata Usaha'),
+('sektu',         '$2y$10$YIcu7JI9aMB0e0uMYr2bxOt1Mf5GVYCxZdHLUCAEUGdr36ZzVeMii', 'Maya Srikandi',       'Tata Usaha');
+
+
 --testing recipients (struktur organisasi SMK sesuai bagan)--
 INSERT INTO recipients (name, position, department, email) VALUES
 ('Ahmad Zulkarnain', 'Kepala Sekolah', 'Manajemen Sekolah', 'ahmad.zulkarnain@smk.sch.id'),            -- id 1
@@ -90,3 +113,9 @@ ORDER BY d.disposition_date DESC;
 SELECT*FROM incoming_letters;
 SELECT*FROM recipients;
 SELECT*FROM dispositions;
+SELECT*fROM users;
+
+SELECT username, password, is_active FROM users WHERE username = 'kepsek';
+SELECT username,password FROM users;
+
+
